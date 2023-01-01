@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-01 23:48:35
+LastEditTime: 2023-01-02 00:13:27
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -97,6 +97,25 @@ def data_4_RFCseries(df:pd.DataFrame):
     else:
         st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(output), unsafe_allow_html=True)
 
+def data_4_CCSeries(df:pd.DataFrame):
+    df['RSI'] = abstract.RSI(df, timeperiod=14)
+    df['MACD'] = abstract.MACD(df, fastperiod=12, slowperiod=26, signalperiod=9)['macd'] #只取MACD
+    df['OBV'] = abstract.OBV(df, timeperiod=14)
+    df['CCI'] = abstract.CCI(df, timeperiod=14)
+    df['ATR'] = abstract.ATR(df, timeperiod=14)
+    df['ADX'] = abstract.ADX(df, timeperiod=14)
+    df['MFI'] = abstract.MFI(df, timeperiod=14)
+
+    minmaxsc = MinMaxScaler()
+    df = df.dropna()
+    df = df.drop(['time'], axis=1)
+    df = minmaxsc.fit_transform(df)
+
+    #取得提問資料
+    X = df[-10:, 0:13]
+    st.write("提問資料")
+    print(X.shape)
+    st.write(X)
 
 def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
     st.write("下載數據中...")
@@ -108,6 +127,8 @@ def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
     st.write(df)
     if model_name.startswith('RFCV'):
         data_4_RFCseries(df)
+    if model_name.startswith('CCV'):
+        data_4_CCSeries(df)
         
 #HI this is a test
 
