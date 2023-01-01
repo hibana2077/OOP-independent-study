@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-01 14:45:59
+LastEditTime: 2023-01-01 23:48:35
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -100,7 +100,7 @@ def data_4_RFCseries(df:pd.DataFrame):
 
 def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
     st.write("下載數據中...")
-    data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe, limit=100)
+    data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe)
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
     df['time'] = pd.to_datetime(df['time'], unit='ms')
     #show data
@@ -113,21 +113,36 @@ def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
 
 def model():
     map_table = {
-        'Binance': ccxt.binance(),
-        'Bitfinex': ccxt.bitfinex(),
-        'Bitstamp': ccxt.bitstamp(),
-        'Bittrex': ccxt.bittrex(),
-        'Coinbase': ccxt.coinbase(),
-        'Coinbase Pro': ccxt.coinbasepro(),
-        'Huobi': ccxt.huobi(),
-        'Kraken': ccxt.kraken(),
-        'OKEx': ccxt.okex(),
-        'Poloniex': ccxt.poloniex()
+        'Binance': ccxt.binance({
+            'options': {
+                'defaultType': 'spot',
+            },
+        }),
+        'Huobi': ccxt.huobi({
+            'options': {
+                'defaultType': 'spot',
+            },
+        }),
+        'Kraken': ccxt.kraken({
+            'options': {
+                'defaultType': 'spot',
+            },
+        }),
+        'OKEx': ccxt.okex({
+            'options': {
+                'defaultType': 'spot',
+            },
+        }),
+        'Cryptocom' : ccxt.cryptocom({
+            'options': {
+                'defaultType': 'spot',
+            },
+        }),
     }
     st.title('模型使用📁')
     modes = os.listdir('model')
     mode = st.selectbox('選擇模型', modes)
-    exchange_input = st.selectbox('選擇交易所', ['Binance', 'Bitfinex', 'Bitstamp', 'Bittrex', 'Huobi', 'Kraken', 'OKEx', 'Poloniex','Bitget'])
+    exchange_input = st.selectbox('選擇交易所', ['Binance', 'Huobi', 'Kraken', 'OKEx','Bitget','Cryptocom'])
     exchange:ccxt.Exchange = map_table[exchange_input]
     exchange.load_markets()
     symbol_input = st.selectbox('選擇貨幣', list(exchange.symbols))
