@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-01 13:56:28
+LastEditTime: 2023-01-01 14:38:59
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -90,7 +90,7 @@ def data_4_RFCseries(df:pd.DataFrame):
     #預測
     y = model.predict(x)
     st.write("預測結果")
-    st.write(y)
+    st.write(y[0])
     output = "不會上漲📉" if y == 0 else "會上漲📈"
     if y[0] == 0:
         st.markdown("<h1 style='text-align: center; color: red;'>{}</h1>".format(output), unsafe_allow_html=True)
