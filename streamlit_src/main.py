@@ -2,14 +2,18 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2022-12-30 14:16:07
+LastEditTime: 2023-01-01 13:56:28
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 
 import streamlit as st
+import pickle
 import ccxt
 import pandas as pd
+import os
+from talib import abstract
+from sklearn.preprocessing import MinMaxScaler
 
 
 model_file_url = '/model/type1.pkl'
@@ -42,6 +46,71 @@ def home():
 
     """)
 
+def data_4_RFCseries(df:pd.DataFrame):
+    df['MFI'] = abstract.MFI(df, timeperiod=14)
+    df['RSI'] = abstract.RSI(df, timeperiod=14)
+    df['ADX'] = abstract.ADX(df, timeperiod=14)
+    df['CCI'] = abstract.CCI(df, timeperiod=14)
+    df['ATR'] = abstract.ATR(df, timeperiod=14)
+    df['OBV'] = abstract.OBV(df, timeperiod=14)
+    df['EMA'] = abstract.EMA(df, timeperiod=14)
+    df['WILLR'] = abstract.WILLR(df, timeperiod=14)
+    df['AD'] = abstract.AD(df, timeperiod=14)
+    df['ADOSC'] = abstract.ADOSC(df, timeperiod=14)
+    df['ADXR'] = abstract.ADXR(df, timeperiod=14)
+    df['APO'] = abstract.APO(df, timeperiod=14)
+    df['AROONOSC'] = abstract.AROONOSC(df, timeperiod=14)
+    df['BOP'] = abstract.BOP(df, timeperiod=14)
+    df['CCI'] = abstract.CCI(df, timeperiod=14)
+    df['CMO'] = abstract.CMO(df, timeperiod=14)
+    df['DX'] = abstract.DX(df, timeperiod=14)
+    df['MOM'] = abstract.MOM(df, timeperiod=14)
+    df['PPO'] = abstract.PPO(df, timeperiod=14)
+    df['ROC'] = abstract.ROC(df, timeperiod=14)
+    df['ROCP'] = abstract.ROCP(df, timeperiod=14)
+    df['ROCR'] = abstract.ROCR(df, timeperiod=14)
+    df['ROCR100'] = abstract.ROCR100(df, timeperiod=14)
+    df['RSI'] = abstract.RSI(df, timeperiod=14)
+    df['TRIX'] = abstract.TRIX(df, timeperiod=14)
+    df['ULTOSC'] = abstract.ULTOSC(df, timeperiod=14)
+    df['WILLR'] = abstract.WILLR(df, timeperiod=14)
+    df['WMA'] = abstract.WMA(df, timeperiod=14)
+    df['HT_TRENDLINE'] = abstract.HT_TRENDLINE(df, timeperiod=14)
+    df['TRANGE'] = abstract.TRANGE(df, timeperiod=14)
+
+    minmaxsc = MinMaxScaler()
+    df = df.dropna()
+    df = df.drop(['time'], axis=1)
+    df = minmaxsc.fit_transform(df)
+    #取最後一筆作為提問
+    x = df[-1]
+    x = x.reshape(1, -1)
+    #讀取模型
+    model = pickle.load(open('model/RFCV1.sav', 'rb'))
+    #預測
+    y = model.predict(x)
+    st.write("預測結果")
+    st.write(y)
+    output = "不會上漲📉" if y == 0 else "會上漲📈"
+    if y[0] == 0:
+        st.markdown("<h1 style='text-align: center; color: red;'>{}</h1>".format(output), unsafe_allow_html=True)
+    else:
+        st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(output), unsafe_allow_html=True)
+
+
+def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
+    st.write("下載數據中...")
+    data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe, limit=100)
+    df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
+    df['time'] = pd.to_datetime(df['time'], unit='ms')
+    #show data
+    st.write("數據預覽")
+    st.write(df)
+    if model_name.startswith('RFCV'):
+        data_4_RFCseries(df)
+        
+
+
 def model():
     map_table = {
         'Binance': ccxt.binance(),
@@ -56,21 +125,21 @@ def model():
         'Poloniex': ccxt.poloniex()
     }
     st.title('模型使用📁')
-    exchange_input = st.selectbox('選擇交易所', ['Binance', 'Bitfinex', 'Bitstamp', 'Bittrex', 'Coinbase', 'Coinbase Pro', 'Huobi', 'Kraken', 'OKEx', 'Poloniex'])
+    modes = os.listdir('model')
+    mode = st.selectbox('選擇模型', modes)
+    exchange_input = st.selectbox('選擇交易所', ['Binance', 'Bitfinex', 'Bitstamp', 'Bittrex', 'Huobi', 'Kraken', 'OKEx', 'Poloniex','Bitget'])
     exchange:ccxt.Exchange = map_table[exchange_input]
     exchange.load_markets()
     symbol_input = st.selectbox('選擇貨幣', list(exchange.symbols))
     symbol = symbol_input
     timeframe_input = st.selectbox('選擇時間間隔', ['1m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d', '3d', '1w', '1M'])
     timeframe = timeframe_input
-    limit_input = st.number_input('選擇數據量', min_value=100, max_value=1000, value=100)
-    limit = limit_input
     st.write('選擇的交易所:', exchange_input)
-    st.write('選擇的貨幣:', symbol_input)
-    st.write('選擇的時間間隔:', timeframe_input)
-    st.write('選擇的數據量:', limit_input)
+    st.write('選擇的貨幣:', symbol)
+    st.write('選擇的時間間隔:', timeframe)
     if st.button('開始預測'):
         st.write('開始預測...')
+        data_process(mode, exchange, symbol, timeframe)
 
 def technical():
     st.title('技術介紹')
