@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-02 00:13:27
+LastEditTime: 2023-01-02 20:20:34
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -12,12 +12,54 @@ import pickle
 import ccxt
 import pandas as pd
 import os
+import torch
+import torch.nn as nn
+import plotly.graph_objects as go
 from talib import abstract
 from sklearn.preprocessing import MinMaxScaler
 
 
-model_file_url = '/model/type1.pkl'
 st.set_page_config(layout="wide")
+
+class SelectItem(torch.nn.Module):#這是用來取出多個輸出其中一個的輸出，如果不用sequential的話，就可以不用這個
+    def __init__(self, item_index):
+        super(SelectItem, self).__init__()
+        self._name = 'selectitem'
+        self.item_index = item_index
+
+    def forward(self, inputs):
+        return inputs[self.item_index]
+
+class crypto_classfier_ver5(nn.Module):#CNN+GRU+MLP
+    def __init__(self):
+        super(crypto_classfier_ver5, self).__init__()
+        self.name = "CCV-5"
+        self.net = nn.Sequential(
+            torch.nn.Conv1d(10, 20, 3, stride=1, padding=1),
+            torch.nn.ELU(),
+            torch.nn.MaxPool1d(1, stride=1),
+            torch.nn.Conv1d(20, 40, 3, stride=1, padding=1),
+            torch.nn.ELU(),
+            torch.nn.MaxPool1d(1, stride=1),
+            torch.nn.Conv1d(40, 1, 3, stride=1, padding=1),
+            torch.nn.Linear(12,64),
+            torch.nn.Linear(64,128),
+            torch.nn.GRU(128, 64, 25),
+            SelectItem(0),
+            torch.nn.Dropout(0.5),
+            torch.nn.GRU(64, 32, 25),
+            SelectItem(0),
+            torch.nn.Dropout(0.5),
+            torch.nn.GRU(32, 16, 25),
+            SelectItem(0),
+            SelectItem(0),
+            torch.nn.Dropout(0.5),
+            torch.nn.Linear(16,2),
+            torch.nn.Softmax(dim=0)
+            )
+    def forward(self, x):
+        x = self.net(x)
+        return x
 
 def home():
     st.write("""
@@ -97,7 +139,7 @@ def data_4_RFCseries(df:pd.DataFrame):
     else:
         st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(output), unsafe_allow_html=True)
 
-def data_4_CCSeries(df:pd.DataFrame):
+def data_4_CCSeries(df:pd.DataFrame,model_name:str):
     df['RSI'] = abstract.RSI(df, timeperiod=14)
     df['MACD'] = abstract.MACD(df, fastperiod=12, slowperiod=26, signalperiod=9)['macd'] #只取MACD
     df['OBV'] = abstract.OBV(df, timeperiod=14)
@@ -113,22 +155,37 @@ def data_4_CCSeries(df:pd.DataFrame):
 
     #取得提問資料
     X = df[-10:, 0:13]
-    st.write("提問資料")
-    print(X.shape)
-    st.write(X)
+
+    #讀取模型
+    model = torch.load(f'model/{model_name}',map_location=torch.device('cpu'))
+    #預測
+    model.eval()
+    X = torch.tensor(X, dtype=torch.float32)
+    y = model(X)
+    up,dn = y[0],y[1]
+    output = "不會上漲📉" if up < dn else "會上漲📈"
+    if y[0] == 0:
+        st.markdown("<h1 style='text-align: center; color: red;'>{}</h1>".format(output), unsafe_allow_html=True)
+    else:
+        st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(output), unsafe_allow_html=True)
 
 def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
     st.write("下載數據中...")
     data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe)
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
     df['time'] = pd.to_datetime(df['time'], unit='ms')
-    #show data
-    st.write("數據預覽")
-    st.write(df)
+    #show candlestick
+    st.write("K線圖")
+    candlestick = go.Figure(data=[go.Candlestick(x=df['time'],
+                                                 open=df['open'],
+                                                 high=df['high'],
+                                                 low=df['low'],
+                                                 close=df['close'])])
+    st.plotly_chart(candlestick)
     if model_name.startswith('RFCV'):
         data_4_RFCseries(df)
     if model_name.startswith('CCV'):
-        data_4_CCSeries(df)
+        data_4_CCSeries(df,model_name)
         
 #HI this is a test
 
