@@ -2,12 +2,12 @@
  * @Author: hibana2077 hibana2077@gmail.com
  * @Date: 2022-12-23 15:44:56
  * @LastEditors: hibana2077 hibana2077@gmail.com
- * @LastEditTime: 2023-01-02 22:31:56
+ * @LastEditTime: 2023-01-02 22:54:15
  * @FilePath: \OOP-independent-study\README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 
-# 物件導向期末專題 - 基於LSTM的MLP加密貨幣價格預測系統
+# 物件導向期末專題 - 基於LSTM的MLP加密貨幣行情預測系統
 
 ![GitHub](https://img.shields.io/github/license/hibana2077/OOP-independent-study?style=plastic-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/hibana2077/OOP-independent-study?style=plastic-square)
@@ -40,3 +40,7 @@
 ### 第二階段
 
 在第二階段中，我們使用了`Streamlit`套件進行網頁化呈現，使其更加方便使用者使用，並且將模型部署到`GCP`雲端，讓使用者可以透過網路直接使用模型。
+
+### 心得
+
+在這個專案中，我們這一組使用了這一年最常聽到的東西作為主題，在製作過程中也有遇到一些問題，像是`pytorch`的結構跟`Tensorflow`不太一樣，導致我們在訓練模型的時候遇到了一些問題，像是模型建立方式上的差異跟訓練方式上的差異，也遇到了梯度爆炸跟過擬合的問題，但是靠著`Github`跟`HackMD`上的資訊以及`pytorch`的官方文件，我們最後還是解決了這些問題，並且將模型部署到雲端，讓使用者可以透過網路直接使用模型。
