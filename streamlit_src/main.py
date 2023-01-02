@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-02 21:04:50
+LastEditTime: 2023-01-02 21:56:47
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -81,8 +81,7 @@ def home():
 ![Streamlit](https://img.shields.io/badge/streamlit-1.2.0-FF4B4B?style=plastic-square&logo=streamlit)
 ![Binance](https://img.shields.io/badge/binance-API-2F3336?style=plastic-square&logo=binance)
 
-這是使用pytorch實現的加密貨幣價格預測系統，使用的數據透過CCXT套件從Binance交易所獲取，並使用pandas套件進行數據處理，使用poltly套件進行數據視覺化，使用Tensorboard套件進行模型訓練過程視覺化，使用Streamlit套件進行網頁化呈現。
-
+這是使用pytorch實現的基於`LTSM和GRU和MLP`的加密貨幣行情預測系統，使用的數據透過CCXT套件從Binance交易所獲取，並使用pandas套件進行數據處理，使用poltly套件進行數據視覺化，使用Tensorboard套件進行模型訓練過程視覺化，使用Streamlit套件進行網頁化呈現。
 
 ## 開發過程及心得
 
@@ -237,6 +236,7 @@ def model():
 
 def technical():
     st.title('技術介紹')
+    st.write()
 
 def about():
     st.title('成員')
@@ -265,7 +265,8 @@ PAGES = {
 }
 
 with st.sidebar:
-    st.title('買賣點預測機器人🤖')
-    selection = st.selectbox("選擇分頁", list(PAGES.keys()))
+    selection = option_menu("走勢預測機器人", list(PAGES.keys()), 
+        icons=['house', 'list-task', 'braces', 'laptop'],menu_icon='robot',default_index=1,orientation='vertical'
+    )
 page = PAGES[selection]
 page()
