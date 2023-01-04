@@ -2,7 +2,7 @@
  * @Author: hibana2077 hibana2077@gmail.com
  * @Date: 2022-12-23 15:44:56
  * @LastEditors: hibana2077 hibana2077@gmail.com
- * @LastEditTime: 2023-01-02 22:54:15
+ * @LastEditTime: 2023-01-03 12:19:31
  * @FilePath: \OOP-independent-study\README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -24,6 +24,8 @@
 ![Binance](https://img.shields.io/badge/binance-API-2F3336?style=plastic-square&logo=binance)
 
 這是使用pytorch實現的基於`LTSM和GRU和MLP`的加密貨幣行情預測系統，使用的數據透過CCXT套件從Binance交易所獲取，並使用pandas套件進行數據處理，使用poltly套件進行數據視覺化，使用Streamlit套件進行網頁化呈現。
+
+如果你想要使用這個專案，請先安裝`python3.10`，然後使用`pip`安裝`requirements.txt`中的套件，最後使用`streamlit run app.py`來啟動網頁。或是使用`docker`來啟動網頁，可以去pull這份 [dockerimage](https://hub.docker.com/repository/docker/hibana2077/oop_pj) 然後使用`docker run -p 8501:8501 hibana2077/oop_pj`來啟動網頁。
 
 ## 開發過程及心得
 
