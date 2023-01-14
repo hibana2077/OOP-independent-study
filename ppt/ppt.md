@@ -21,7 +21,7 @@ class: invert
 
 # 介紹
 
-這是使用pytorch實現的基於`LTSM和GRU和MLP`的加密貨幣行情預測系統，使用的數據透過CCXT套件從Binance交易所獲取，並使用pandas套件進行數據處理，使用poltly套件進行數據視覺化，使用Streamlit套件進行網頁化呈現。
+這是使用pytorch實現的基於`GRU和MLP`的加密貨幣行情預測系統，使用的數據透過CCXT套件從Binance交易所獲取，並使用pandas套件進行數據處理，使用poltly套件進行數據視覺化，使用Streamlit套件進行網頁化呈現。
 
 如果你想要使用這個專案，請先安裝`python3.10`，然後使用`pip`安裝`requirements.txt`中的套件，最後使用`streamlit run app.py`來啟動網頁。或是使用`docker`來啟動網頁，可以去pull這份 [dockerimage](https://hub.docker.com/repository/docker/hibana2077/oop_pj) 然後使用`docker run -p 8501:8501 hibana2077/oop_pj`來啟動網頁。
 
@@ -33,13 +33,16 @@ class: invert
 
 ### 爬取數據
 
+<!-- 這裡使用 ccxt的binance類別來讀取加密貨幣歷史價格。
+並且轉換成pandas dataframe -->
+
 ![w:900](https://media.discordapp.net/attachments/868759966431973416/1063626299442212874/image.png)
 
 ---
 
 ### 數據處理
 
-<!-- This is a presenter note for this page. -->
+<!-- 這裡使用talib套件，talib套件提供多種技術指標使用，第一張是建立技術指標，第二張則是把UP DOWN標示出來 -->
 
 ![w:900](https://media.discordapp.net/attachments/868759966431973416/1063627280900968478/image.png)
 
@@ -47,3 +50,173 @@ class: invert
 
 ---
 
+### 正規化
+
+<!-- 把所有要輸入的東西做正規化，這樣的好處是避免梯度爆炸以及可以讓loss小一點。
+公式: value - min/max-min-->
+
+![w:1000](https://media.discordapp.net/attachments/868759966431973416/1063628797758419056/image.png?width=1333&height=605)
+
+---
+
+### 分割數據
+
+<!-- 把第1項到12項設定為X，後兩項為Y -->
+
+![](https://media.discordapp.net/attachments/868759966431973416/1063629108258541702/image.png)
+
+---
+
+### 建立資料集類別
+
+<!-- 這裡用sklearn把XY分為測試集 驗證集 訓練集 比例為: 6:3:1 -->
+
+![w:900](https://media.discordapp.net/attachments/868759966431973416/1063629680927846451/image.png)
+
+![w:900](https://media.discordapp.net/attachments/868759966431973416/1063629829066461264/image.png)
+
+---
+
+![](https://media.discordapp.net/attachments/868759966431973416/1063630420698202112/image.png?width=456&height=638)
+
+![bg right:55% 100%](https://media.discordapp.net/attachments/868759966431973416/1063630630056902737/image.png)
+
+---
+
+### 建立模型
+
+<!-- 這個是用來把GRU的第一項作為下一層的輸入，因為GRU的輸出為 y_out , h0(隱藏狀態) -->
+
+#### SelectItem
+
+![w:700](https://media.discordapp.net/attachments/868759966431973416/1063631170492968980/image.png?width=960&height=638)
+
+---
+
+#### Ver1 (MLP+Dropout)
+
+- 基底為MLP
+- 使用Dropout避免過擬合
+
+![bg right](https://media.discordapp.net/attachments/868759966431973416/1063631641291014165/image.png?width=517&height=638)
+
+
+---
+
+#### Ver3 (MLP+GRU)
+
+- 基底為MLP
+- 使用Dropout避免過擬合
+- 使用GRU來加強過去的資訊
+
+![bg right:60%](https://media.discordapp.net/attachments/868759966431973416/1063632330771677184/image.png?width=832&height=638)
+
+---
+
+#### Ver5 (DUE channel MLP+Dropout)
+
+- 基底為MLP
+- 在第二層分成兩個通道
+- 一個通道使用較多的Dropout
+- 另一個通道使用較少的Dropout
+- 並且在最後二層的輸出上使用`torch.cat`來合併
+
+![bg right:45%](https://media.discordapp.net/attachments/868759966431973416/1063633311370575923/image.png?width=436&height=638)
+
+---
+
+<!-- -->
+
+### 訓練模型(函數)
+
+![w:1150](https://media.discordapp.net/attachments/868759966431973416/1063633949194194985/image.png?width=1302&height=638)
+
+---
+
+### 測試模型(函數)
+
+![w:1000](https://media.discordapp.net/attachments/868759966431973416/1063634263347572776/image.png?width=1132&height=637)
+
+---
+
+### 訓練模型(model - ver1)
+
+![w:1100](https://media.discordapp.net/attachments/868759966431973416/1063634510228508752/image.png?width=1178&height=638)
+
+---
+
+### 訓練結果(model - ver1)
+
+#### Loss
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063634870464692354/image.png)
+
+---
+
+#### Accuracy
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063634852441768027/image.png)
+
+---
+
+#### confusion matrix
+
+![bg right:68% w:800](https://media.discordapp.net/attachments/868759966431973416/1063634893818568835/image.png)
+
+---
+
+### 訓練模型(model - ver3)
+
+![w:1100](https://media.discordapp.net/attachments/868759966431973416/1063636587839230001/image.png?width=1178&height=638)
+
+---
+
+### 訓練結果(model - ver3)
+
+#### Loss
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063636752717336596/image.png)
+
+---
+
+#### Accuracy
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063636763068858388/image.png)
+
+---
+
+#### confusion matrix
+
+![bg right:68% w:800](https://media.discordapp.net/attachments/868759966431973416/1063636782211665920/image.png)
+
+---
+
+### 訓練模型(model - ver5)
+
+![w:1100](https://media.discordapp.net/attachments/868759966431973416/1063637343531171890/image.png?width=1178&height=638)
+
+---
+
+### 訓練結果(model - ver5)
+
+#### Loss
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063637453983985744/image.png)
+
+---
+
+#### Accuracy
+
+![w:650](https://media.discordapp.net/attachments/868759966431973416/1063637468454322186/image.png)
+
+---
+
+#### confusion matrix
+
+![bg right:68% w:800](https://media.discordapp.net/attachments/868759966431973416/1063637494115090503/image.png)
+
+---
+
+# 結論
+
+透過以上實驗，我們可以發現，要預測加密貨幣價格走勢是一件不太容易的事情，因為加密貨幣的價格走勢是一個非常不穩定的東西，而且價格走勢的變化也是非常快速的，因此我們在訓練模型的時候，需要將資料集的時間間隔設定得越短越好，這樣才能讓模型更好的去預測價格走勢，我們也發現，模型的深度太大的話資料必須要增加，才能提升模型的準確度。
