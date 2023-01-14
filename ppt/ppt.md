@@ -237,3 +237,17 @@ class: invert
 # 結論
 
 透過以上實驗，我們可以發現，要預測加密貨幣價格走勢是一件不太容易的事情，因為加密貨幣的價格走勢是一個非常不穩定的東西，而且價格走勢的變化也是非常快速的，因此我們在訓練模型的時候，需要將資料集的時間間隔設定得越短越好，這樣才能讓模型更好的去預測價格走勢，我們也發現，模型的深度太大的話資料必須要增加，才能提升模型的準確度。
+
+---
+
+# 參考資料
+
+[1] [https://www.kaggle.com/](https://www.kaggle.com/)
+
+[2] [PyTorch 中文手册(pytorch handbook)](https://github.com/zergtant/pytorch-handbook)
+
+[3] [PyTorch 官方文件](https://pytorch.org/docs/stable/index.html)
+
+[4] [LSTM-Classification-pytorch](https://github.com/jiangqy/LSTM-Classification-pytorch)
+
+[5] [CCXT 官方文件](https://docs.ccxt.com/en/latest/manual.html)
