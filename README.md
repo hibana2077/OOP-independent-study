@@ -2,12 +2,12 @@
  * @Author: hibana2077 hibana2077@gmail.com
  * @Date: 2022-12-23 15:44:56
  * @LastEditors: hibana2077 hibana2077@gmail.com
- * @LastEditTime: 2023-01-03 12:19:31
+ * @LastEditTime: 2023-01-14 09:05:42
  * @FilePath: \OOP-independent-study\README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 
-# 物件導向期末專題 - 基於LSTM的MLP加密貨幣行情預測系統
+# 物件導向期末專題 - 基於GRU的MLP加密貨幣行情預測系統
 
 ![GitHub](https://img.shields.io/github/license/hibana2077/OOP-independent-study?style=plastic-square)
 ![GitHub repo size](https://img.shields.io/github/repo-size/hibana2077/OOP-independent-study?style=plastic-square)
@@ -37,7 +37,7 @@
 
 數據處理的部分使用了`pandas` `sklearn` `talib` 三個套件，其中pandas套件用於數據的讀取和處理，sklearn套件用於數據的標準化，talib套件用於計算技術指標。
 
-模型訓練的部分使用了`pytorch`套件，其中使用了`LSTM`和`GRU`兩種模型，並且使用了`MLP`模型進行模型的融合。
+模型訓練的部分使用了`pytorch`套件，其中使用了`GRU`模型，並且使用了`MLP`模型進行模型的融合。
 
 ### 第二階段
 
