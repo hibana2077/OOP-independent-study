@@ -248,9 +248,9 @@ class: invert
 
 # 網站介紹
 
-可以掃描下方的QRcode，或是點擊旁邊的網址，就可以進入 [網站](https://crypto-predictor-1.web.app/)。
+可以掃描下方的QRcode，或是點擊旁邊的網址，就可以進入 [網站](https://hibana2077-oop-final-project.web.app/)。
 
-![w:800](https://media.discordapp.net/attachments/868759966431973416/1063659881000001536/image.png?width=1333&height=559)
+![w:400](https://media.discordapp.net/attachments/868759966431973416/1063668182952443924/230014115701.png)
 
 
 ---
