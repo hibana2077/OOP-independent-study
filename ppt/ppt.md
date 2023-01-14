@@ -240,6 +240,12 @@ class: invert
 
 ---
 
+# 部屬模型
+
+模型訓練完成後，我們就可以將模型部屬到網站上，網站透過streamlit框架完成，並且使用firebase平台部屬，網站的功能是可以輸入加密貨幣的名稱，然後輸入想要預測的時間，就可以預測該加密貨幣的價格走勢。
+
+---
+
 # 參考資料
 
 [1] [https://www.kaggle.com/](https://www.kaggle.com/)
@@ -251,3 +257,11 @@ class: invert
 [4] [LSTM-Classification-pytorch](https://github.com/jiangqy/LSTM-Classification-pytorch)
 
 [5] [CCXT 官方文件](https://docs.ccxt.com/en/latest/manual.html)
+
+--- 
+
+<!-- _class: lead -->
+
+# 謝謝大家
+
+powered by [marp](https://marp.app)
