@@ -125,13 +125,24 @@ class: invert
 
 ---
 
-<!-- -->
+<!-- optimizer.zero_grad() 將前一回的損失歸0
+     output = model(data) 獲得輸出
+     loss = criterion(output, target) 取得輸出跟答案的loss
+     loss.backward() 反向傳遞
+     optimizer.step() 更新參數
+     -->
 
 ### 訓練模型(函數)
 
 ![w:1150](https://media.discordapp.net/attachments/868759966431973416/1063633949194194985/image.png?width=1302&height=638)
 
 ---
+
+<!--
+    test_loss += criterion(output, target).item() 將loss加總
+    pred = output.data.max(1, keepdim=True)[1] 取得輸出的最大值
+    correct += pred.eq(target.data.view_as(pred)).cpu().sum() 取得正確的數量
+-->
 
 ### 測試模型(函數)
 
@@ -140,6 +151,12 @@ class: invert
 ---
 
 ### 訓練模型(model - ver1)
+
+<!-- 
+    batch_size = 64 每次訓練的數量
+    shuffle = True 是否打亂資料
+    num_workers = 0 使用幾個線程
+-->
 
 ![w:1100](https://media.discordapp.net/attachments/868759966431973416/1063634510228508752/image.png?width=1178&height=638)
 
