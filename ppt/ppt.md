@@ -246,6 +246,28 @@ class: invert
 
 ---
 
+# 網站介紹
+
+
+---
+
+# 使用方式
+
+![bg right:68% w:800](https://media.discordapp.net/attachments/868759966431973416/1063660519405391942/image.png?width=1333&height=559)
+
+- 選擇 `模型使用` 頁面
+- 選擇想要預測的加密貨幣
+- 輸入想要預測的時間
+- 點擊 `預測` 按鈕
+
+---
+
+# 預測結果
+
+![bg right:68% w:750](https://media.discordapp.net/attachments/868759966431973416/1063661538189254798/image.png?width=689&height=638)
+
+---
+
 # 參考資料
 
 [1] [https://www.kaggle.com/](https://www.kaggle.com/)
