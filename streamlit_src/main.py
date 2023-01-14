@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2022-12-23 15:45:40
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-01-14 10:59:22
+LastEditTime: 2023-01-14 11:25:31
 FilePath: \OOP-independent-study\streamlit_src\main.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -22,6 +22,92 @@ from streamlit_option_menu import option_menu
 
 
 st.set_page_config(layout="wide")
+
+class SelectItem(torch.nn.Module):#這是用來取出多個輸出其中一個的輸出，如果不用sequential的話，就可以不用這個
+    def __init__(self, item_index):
+        super(SelectItem, self).__init__()
+        self._name = 'selectitem'
+        self.item_index = item_index
+
+    def forward(self, inputs):
+        return inputs[self.item_index]
+
+class CCV5(nn.Module):#DUE channel MLP
+    def __init__(self):
+        super(CCV5, self).__init__()
+        self.pub1 = nn.Linear(12,32)
+        self.a1layer1 = nn.Linear(32, 256)
+        self.a1layer2 = nn.Linear(256, 512)
+        self.a1layer3 = nn.Linear(512, 256)
+        self.a1layer4 = nn.Linear(256, 64)#a1 end
+        self.a2layer1 = nn.Linear(32, 256)
+        self.a2layer2 = nn.Linear(256, 556)
+        self.a2layer3 = nn.Linear(556, 256)
+        self.a2layer4 = nn.Linear(256, 192)#a2 end
+        self.concat = nn.Linear(256, 32)
+        self.a3layer1 = nn.Linear(32, 16)
+        self.a3layer2 = nn.Linear(16, 2)
+        self.dropout = nn.Dropout(0.3)
+
+    def forward(self, x):
+        x = F.relu(self.pub1(x))
+        a1 = F.relu(self.a1layer1(x))
+        a1 = F.relu(self.a1layer2(a1))
+        a1 = self.dropout(a1)
+        a1 = F.relu(self.a1layer3(a1))
+        a1 = F.relu(self.a1layer4(a1))
+        a2 = F.relu(self.a2layer1(x))
+        a2 = F.relu(self.a2layer2(a2))
+        a2 = self.dropout(a2)
+        a2 = F.relu(self.a2layer3(a2))
+        a2 = F.relu(self.a2layer4(a2))
+        x = torch.cat((a1, a2), 1)
+        x = F.relu(self.concat(x))
+        x = F.relu(self.a3layer1(x))
+        x = self.a3layer2(x)
+        return x
+
+class CCV3(nn.Module):#MLP+GRU
+    def __init__(self):
+        super(CCV3, self).__init__()
+        self.Linear1 = nn.Linear(12, 128)
+        self.Linear2 = nn.Linear(128, 256)
+        self.Linear3 = nn.Linear(256, 2)
+        self.Dropout1 = nn.Dropout(0.168)
+        self.GRU1 = nn.GRU(256, 256, 1, batch_first=True)
+
+    def forward(self, x):
+        x = F.relu(self.Linear1(x))
+        x = F.relu(self.Linear2(x))
+        x = self.Dropout1(x)
+        x , _ = self.GRU1(x)
+        x = self.Linear3(x)
+        return x
+
+class CCV1(nn.Module):#MLP
+    def __init__(self):
+        super(CCV1, self).__init__()
+        self.Linear1 = nn.Linear(12, 128)
+        self.Linear2 = nn.Linear(128, 256)
+        self.Linear3 = nn.Linear(256, 1024)
+        self.Linear4 = nn.Linear(1024, 256)
+        self.Linear5 = nn.Linear(256, 128)
+        self.Linear6 = nn.Linear(128, 64)
+        self.Linear7 = nn.Linear(64, 2)
+        self.Dropout1 = nn.Dropout(0.3)
+            
+    def forward(self, x):
+        x = F.relu(self.Linear1(x))
+        x = F.relu(self.Linear2(x))
+        x = self.Dropout1(x)
+        x = F.relu(self.Linear3(x))
+        x = F.relu(self.Linear4(x))
+        x = self.Dropout1(x)
+        x = F.relu(self.Linear5(x))
+        x = F.relu(self.Linear6(x))
+        x = self.Dropout1(x)
+        x = self.Linear7(x)
+        return x
 
 def home():
     st.write("""
@@ -121,91 +207,7 @@ def data_4_RFCseries(df:pd.DataFrame):
     del model
 
 def data_4_CCSeries(df:pd.DataFrame,model_name:str):
-    class SelectItem(torch.nn.Module):#這是用來取出多個輸出其中一個的輸出，如果不用sequential的話，就可以不用這個
-        def __init__(self, item_index):
-            super(SelectItem, self).__init__()
-            self._name = 'selectitem'
-            self.item_index = item_index
-
-        def forward(self, inputs):
-            return inputs[self.item_index]
-
-    class CCV5(nn.Module):#DUE channel MLP
-        def __init__(self):
-            super(CCV5, self).__init__()
-            self.pub1 = nn.Linear(12,32)
-            self.a1layer1 = nn.Linear(32, 256)
-            self.a1layer2 = nn.Linear(256, 512)
-            self.a1layer3 = nn.Linear(512, 256)
-            self.a1layer4 = nn.Linear(256, 64)#a1 end
-            self.a2layer1 = nn.Linear(32, 256)
-            self.a2layer2 = nn.Linear(256, 556)
-            self.a2layer3 = nn.Linear(556, 256)
-            self.a2layer4 = nn.Linear(256, 192)#a2 end
-            self.concat = nn.Linear(256, 32)
-            self.a3layer1 = nn.Linear(32, 16)
-            self.a3layer2 = nn.Linear(16, 2)
-            self.dropout = nn.Dropout(0.3)
-
-        def forward(self, x):
-            x = F.relu(self.pub1(x))
-            a1 = F.relu(self.a1layer1(x))
-            a1 = F.relu(self.a1layer2(a1))
-            a1 = self.dropout(a1)
-            a1 = F.relu(self.a1layer3(a1))
-            a1 = F.relu(self.a1layer4(a1))
-            a2 = F.relu(self.a2layer1(x))
-            a2 = F.relu(self.a2layer2(a2))
-            a2 = self.dropout(a2)
-            a2 = F.relu(self.a2layer3(a2))
-            a2 = F.relu(self.a2layer4(a2))
-            x = torch.cat((a1, a2), 1)
-            x = F.relu(self.concat(x))
-            x = F.relu(self.a3layer1(x))
-            x = self.a3layer2(x)
-            return x
-
-    class CCV3(nn.Module):#MLP+GRU
-        def __init__(self):
-            super(CCV3, self).__init__()
-            self.Linear1 = nn.Linear(12, 128)
-            self.Linear2 = nn.Linear(128, 256)
-            self.Linear3 = nn.Linear(256, 2)
-            self.Dropout1 = nn.Dropout(0.168)
-            self.GRU1 = nn.GRU(256, 256, 1, batch_first=True)
-
-        def forward(self, x):
-            x = F.relu(self.Linear1(x))
-            x = F.relu(self.Linear2(x))
-            x = self.Dropout1(x)
-            x , _ = self.GRU1(x)
-            x = self.Linear3(x)
-            return x
-
-    class CCV1(nn.Module):#MLP
-        def __init__(self):
-            super(CCV1, self).__init__()
-            self.Linear1 = nn.Linear(12, 128)
-            self.Linear2 = nn.Linear(128, 256)
-            self.Linear3 = nn.Linear(256, 1024)
-            self.Linear4 = nn.Linear(1024, 256)
-            self.Linear5 = nn.Linear(256, 128)
-            self.Linear6 = nn.Linear(128, 64)
-            self.Linear7 = nn.Linear(64, 2)
-            self.Dropout1 = nn.Dropout(0.3)
-            
-        def forward(self, x):
-            x = F.relu(self.Linear1(x))
-            x = F.relu(self.Linear2(x))
-            x = self.Dropout1(x)
-            x = F.relu(self.Linear3(x))
-            x = F.relu(self.Linear4(x))
-            x = self.Dropout1(x)
-            x = F.relu(self.Linear5(x))
-            x = F.relu(self.Linear6(x))
-            x = self.Dropout1(x)
-            x = self.Linear7(x)
-            return x
+    
     df['RSI'] = abstract.RSI(df, timeperiod=14)
     df['MACD'] = abstract.MACD(df, fastperiod=12, slowperiod=26, signalperiod=9)['macd'] #只取MACD
     df['OBV'] = abstract.OBV(df, timeperiod=14)
@@ -223,17 +225,20 @@ def data_4_CCSeries(df:pd.DataFrame,model_name:str):
     X = df[-10:, 0:13]
 
     #讀取模型
-    model_CCV = torch.load(model_name)
+    path = os.path.join(os.getcwd(), 'model', model_name)
+    model_CCV = torch.load(path)
     #預測
     model_CCV.eval()
     X = torch.tensor(X, dtype=torch.float32)
-    y = model_CCV(X)
-    up,dn = y[0],y[1]
-    output = "不會上漲📉" if up < dn else "會上漲📈"
+    y = model_CCV(X)[-1]
+    st.write("預測結果")
+    out = "不會上漲📉" if y.argmax().item() else "會上漲📈"
     if y[0] == 0:
-        st.markdown("<h1 style='text-align: center; color: red;'>{}</h1>".format(output), unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: red;'>{}</h1>".format(out), unsafe_allow_html=True)
     else:
-        st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(output), unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(out), unsafe_allow_html=True)
+    #釋放model占用的記憶體
+    del model_CCV
 
 def data_process(model_name:str , exchange:ccxt.Exchange, symbol , timeframe):
     st.write("下載數據中...")
@@ -301,8 +306,34 @@ def model_cooose():
         data_process(mode, exchange, symbol, timeframe)
 
 def technical():
-    st.title('技術介紹')
-    st.write()
+    st.write("""
+# 技術使用
+
+## 1. 爬蟲
+
+![Binance](https://img.shields.io/badge/binance-API-2F3336?style=plastic-square&logo=binance)
+
+## 2. 資料處理
+
+![Python](https://img.shields.io/badge/python-3.10-2F3336?style=plastic-square&logo=python)
+
+![Pandas](https://img.shields.io/badge/pandas-1.3.4-150458?style=plastic-square&logo=pandas)
+
+![Numpy](https://img.shields.io/badge/numpy-1.21.2-013243?style=plastic-square&logo=numpy)
+
+## 3. 視覺化
+
+![Streamlit](https://img.shields.io/badge/streamlit-1.2.0-FF4B4B?style=plastic-square&logo=streamlit)
+
+![Poltly](https://img.shields.io/badge/poltly-5.3.1-3F4F75?style=plastic-square&logo=Plotly)
+
+## 4. 部署
+
+![GCP](https://img.shields.io/badge/GCP-Cloud-4285F4?style=plastic-square&logo=google-cloud)
+
+![Docker](https://img.shields.io/badge/docker-20.10.8-2496ED?style=plastic-square&logo=docker)
+
+![Firebase](https://img.shields.io/badge/firebase-front_end-FFCA28?style=plastic-square&logo=firebase)""")
 
 def about():
     st.title('成員')
