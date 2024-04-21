@@ -1,8 +1,8 @@
 # To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
-ccxt==2.5.11
-numpy==1.24.1
-pandas==1.5.2
-scikit-learn==1.2.0
-streamlit==1.14.0
-plotly==5.11.0
-streamlit-option-menu==0.3.2
+ccxt
+numpy
+pandas
+scikit-learn
+streamlit
+plotly
+streamlit-option-menu

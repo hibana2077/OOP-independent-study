@@ -24,7 +24,7 @@ RUN talib_install_linux/talib_install.sh
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
+EXPOSE 80
+
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["streamlit", "run", "streamlit_src/main.py","--server.port", "80", "--server.address", "0.0.0.0"]
-
-EXPOSE 80
