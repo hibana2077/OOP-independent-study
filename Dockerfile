@@ -18,6 +18,7 @@ WORKDIR /app
 COPY . /app
 
 RUN talib_install_linux/talib_install.sh
+RUN rm -rf /var/lib/apt/lists/*
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
